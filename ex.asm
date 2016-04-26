@@ -232,10 +232,122 @@ CODE ENDS
 ;ex 4.13
 ;统计STRING字符串中数字字符（‘0’ - ‘9’）的个数，并将数字字符放入BUFFER区内（开始单元存放字符个数）
 
+;用 cmp 直接判断是否为数字
+
 DATA SEGMENT
+	;STRING ENDED BY '$'
+	STRING DB '1234KDJFKD2', '$'
+	BUFFER DB 10 DUP 0
+DATA ENDS
+
+STACK SEGMENT STACK 'STACK'
+	DB 100 DUP (?)
+STACK ENDS
+
+CODE SEGMENT
+	ASSUME DS: DATA, SS: STACK, CS: CODE
+START:
+	MOV AX, DATA
+	MOV DS, AX
+
+	LEA BX, STRING
+	LEA DX, BUFFER
+
+	;PUT SEZI OF STRING INTO BUFFER
+	MOV [DX], SIZE STRING
+	INC DX
+
+AGAIN:
+	MOV AL, [BX]
+	INC BX	;REFRESH BX
+
+	CMP AL, '$'
+	JZ EXIT
+	;USE ASCII TO COMPARE
+	CMP AL, 30H		;COMPARE TO 0
+	JC AGAIN
+	CMP AL, 39H		;COMPARE TO 9
+	JC MV2BF
+	JMP AGAIN
+
+MV2BF:
+	MOV [DX], AL
+	INC DX
+
+EXIT:
+	HLT
+CODE ENDS
+	END START
+
+;-------------------------------------------------------------------------------------------
+;ex 4.19
+;自STRING开始有一个字符串（'$'结束），查找有多少个'#'，将个数存放在NUMBER字单元中，并把偏移地址放到POINTER开始的连续存储字单元中
+
+DATA SEGMENT
+	STRING DB '435##', '$'
+	NUMBER DW 0
+	POINTER DW 10 DUP 0
+DATA ENDS
+
+STACK SEGMENT STACK 'STACK'
+	DB 100 DUP 0
+STACK ENDS
+
+CODE SEGMENT
+	ASSUME DS: DATA, SS: STACK, CS: CODE
+
+START:
+	MOV AX, DATA
+	MOV DS, AX
+
+	LEA BX, STRING
+
+	LEA CX, NUMBER
+	LEA DX, POINTER
+
+AGAIN:
+	MOV AL, [BX]
+	INC BX
+
+	;TEST IF IT IS THE END OF STRING
+	CMP AL, '$'
+	JZ EXIT
+
+	;ASCII FOR '#' IS 23H
+	CMP AL, 23H
+	JZ IS_SHARP
+	JMP AGAIN
+
+IS_SHARP:
+	;REFRESH NUMBER
+	INC [CX]
+
+	MOV BX, [DX]
+	INC DX
+	JMP AGAIN
+	
+
+CODE ENDS
+	END START
 
 
 
+;-------------------------------------------------------------------------------------------
+;ex 4.20
+;从STRING开始有100个数，检查这些数，正数保持不变，负数取补送回
+
+DATA SEGMENT
+DATA ENDS
+
+CODE SEGMENT
+	ASSUME DS: DATA, CS:CODE
+
+START:
+	MOV AX, DATA
+	MOV DS, AX
+
+CODE ENDS
+	END START
 
 
 

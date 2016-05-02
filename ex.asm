@@ -1,4 +1,44 @@
 ;-------------------------------------------------------------------------------------------
+; ex 4.5 自1000H单元开始，有100个无符号数（字节），编写程序计算这100个数的和，并存放在1971H和1972H单元中，高位存放在1972H单元中。
+;思路：ax置零（无符号数扩展直接加0），将第一个加数放入bl，与al（此时为0）相加，每次相加后检查cf，若cf为1，则ah加1.
+data segment
+data ends
+
+stack segment
+stach ends
+
+code segment
+	assume ds: data, ss: stack, cs:code
+
+start:
+	mov ax, data
+	mov ds, ax
+
+	mov cx, 100
+	mov dx, 1000H
+	mov ax, 0
+
+again:
+	mov bl, [dx]
+
+	add al, bl
+	jc addah
+	jnc next
+
+addah:
+	inc ah
+next:
+	inc dx
+	loop again
+
+	mov [1971H], al
+	mov [1972H], ah
+
+code ends
+	end start
+
+
+;-------------------------------------------------------------------------------------------
 ; ex 4.9 在0020H单元和020AH单元开始，分别存放两个各为10个字节的未组合BCD数（地址最低处存放最低字节）。
 ;计算两个为组合BCD数的和，存放在0214H单元开始的存储单元中
 
@@ -21,7 +61,7 @@ CODE SEGMENT
 	MOV CX, 10
 	MOV DX, 020AH
 
-	;CLEAN CF
+	;CLEAR CF
 	MOV AX, 0
 	RCR AX, 1
 

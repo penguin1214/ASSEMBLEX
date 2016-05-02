@@ -127,3 +127,5 @@ code ends
     end start
 ```
 > 实验结果截图
+
+![](https://raw.githubusercontent.com/penguin-penpen/ASSEMBLEX/master/assignment_screenshot.png)
